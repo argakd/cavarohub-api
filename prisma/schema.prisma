@@ -1,26 +1,11 @@
-// ============================================================================
-// DATABASE SCHEMA — Event Management Platform
-// ----------------------------------------------------------------------------
-// Single source of truth for the whole data model: auth/referral tables plus
-// events/transactions/reviews. Whenever this file changes, run
-// `npx prisma migrate dev` and commit the new migration folder under
-// prisma/migrations/ — never edit a migration file by hand.
-// ============================================================================
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// ----------------------------------------------------------------------------
-// Auth, profile, and referral rewards (User/Referral/PointLedger/Coupon).
-// Transactions also create PointLedger/Coupon rows when a purchase uses or
-// refunds them.
-// ----------------------------------------------------------------------------
 enum Role {
   CUSTOMER
   ORGANIZER
@@ -38,9 +23,6 @@ model User {
   referredBy     User?    @relation("Referrals", fields: [referredById], references: [id])
   referrals      User[]   @relation("Referrals")
 
-  // Forgot-password flow: a hashed, single-use, time-limited token. We store
-  // the hash (not the raw token) the same way we store passwordHash — so a
-  // database leak alone can't be used to reset anyone's password.
   resetTokenHash      String?
   resetTokenExpiresAt DateTime?
 
@@ -56,8 +38,6 @@ model User {
   @@map("users")
 }
 
-// Points earned via referral, spent on transactions. Each row expires
-// independently 3 months after being credited (per spec).
 model PointLedger {
   id        String    @id @default(uuid())
   userId    String
@@ -70,8 +50,6 @@ model PointLedger {
   @@map("point_ledger")
 }
 
-// Reward coupons granted by the system on referral signup — usable on ANY
-// event (distinct from event-specific Vouchers below).
 model Coupon {
   id            String       @id @default(uuid())
   code          String       @unique
@@ -92,11 +70,6 @@ enum DiscountType {
   PERCENTAGE
   FIXED
 }
-
-// ----------------------------------------------------------------------------
-// Event catalog + transactions: Category, Event, TicketType, Voucher,
-// Transaction, TransactionItem, Review.
-// ----------------------------------------------------------------------------
 
 model Category {
   id     String  @id @default(uuid())
@@ -157,7 +130,6 @@ model TicketType {
   @@map("ticket_types")
 }
 
-// Organizer-issued, event-specific discount. Distinct from system Coupons.
 model Voucher {
   id            String       @id @default(uuid())
   eventId       String
