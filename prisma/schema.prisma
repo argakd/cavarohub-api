@@ -1,0 +1,251 @@
+// ============================================================================
+// DATABASE SCHEMA — Event Management Platform
+// ----------------------------------------------------------------------------
+// Single source of truth for the whole data model: auth/referral tables plus
+// events/transactions/reviews. Whenever this file changes, run
+// `npx prisma migrate dev` and commit the new migration folder under
+// prisma/migrations/ — never edit a migration file by hand.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// Auth, profile, and referral rewards (User/Referral/PointLedger/Coupon).
+// Transactions also create PointLedger/Coupon rows when a purchase uses or
+// refunds them.
+// ----------------------------------------------------------------------------
+enum Role {
+  CUSTOMER
+  ORGANIZER
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String
+  name           String
+  role           Role     @default(CUSTOMER)
+  profilePicture String?
+  referralCode   String   @unique
+  referredById   String?
+  referredBy     User?    @relation("Referrals", fields: [referredById], references: [id])
+  referrals      User[]   @relation("Referrals")
+
+  // Forgot-password flow: a hashed, single-use, time-limited token. We store
+  // the hash (not the raw token) the same way we store passwordHash — so a
+  // database leak alone can't be used to reset anyone's password.
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizedEvents Event[]        @relation("OrganizerEvents")
+  transactions    Transaction[]
+  reviews         Review[]
+  pointLedger     PointLedger[]
+  coupons         Coupon[]
+
+  @@map("users")
+}
+
+// Points earned via referral, spent on transactions. Each row expires
+// independently 3 months after being credited (per spec).
+model PointLedger {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  amount    Int // positive = earned, negative = spent/refunded reversal
+  reason    String // e.g. "REFERRAL_BONUS", "TRANSACTION_SPEND", "TRANSACTION_REFUND"
+  expiresAt DateTime? // null for spend/refund rows, set for earned rows
+  createdAt DateTime  @default(now())
+
+  @@map("point_ledger")
+}
+
+// Reward coupons granted by the system on referral signup — usable on ANY
+// event (distinct from event-specific Vouchers below).
+model Coupon {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  discountType  DiscountType @default(PERCENTAGE)
+  discountValue Int
+  isUsed        Boolean      @default(false)
+  expiresAt     DateTime
+  createdAt     DateTime     @default(now())
+
+  transactions Transaction[]
+
+  @@map("coupons")
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+// ----------------------------------------------------------------------------
+// Event catalog + transactions: Category, Event, TicketType, Voucher,
+// Transaction, TransactionItem, Review.
+// ----------------------------------------------------------------------------
+
+model Category {
+  id     String  @id @default(uuid())
+  name   String  @unique
+  events Event[]
+
+  @@map("categories")
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+model Event {
+  id             String      @id @default(uuid())
+  organizerId    String
+  organizer      User        @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  name           String
+  slug           String      @unique
+  description    String
+  location       String
+  category       Category    @relation(fields: [categoryId], references: [id])
+  categoryId     String
+  startDate      DateTime
+  endDate        DateTime
+  isPaid         Boolean     @default(true)
+  basePriceIdr   Int         @default(0) // used when no ticket types defined
+  totalSeats     Int
+  availableSeats Int
+  bannerImageUrl String?
+  status         EventStatus @default(PUBLISHED)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  ticketTypes  TicketType[]
+  vouchers     Voucher[]
+  transactions Transaction[]
+  reviews      Review[]
+
+  @@index([categoryId, location])
+  @@index([startDate])
+  @@map("events")
+}
+
+model TicketType {
+  id           String @id @default(uuid())
+  eventId      String
+  event        Event  @relation(fields: [eventId], references: [id])
+  name         String // e.g. "Regular", "VIP"
+  priceIdr     Int
+  totalSeats   Int
+  availableSeats Int
+
+  transactionItems TransactionItem[]
+
+  @@map("ticket_types")
+}
+
+// Organizer-issued, event-specific discount. Distinct from system Coupons.
+model Voucher {
+  id            String       @id @default(uuid())
+  eventId       String
+  event         Event        @relation(fields: [eventId], references: [id])
+  code          String
+  discountType  DiscountType @default(FIXED)
+  discountValue Int
+  startDate     DateTime
+  endDate       DateTime
+  maxUses       Int?
+  usedCount     Int          @default(0)
+  createdAt     DateTime     @default(now())
+
+  transactions Transaction[]
+
+  @@unique([eventId, code])
+  @@map("vouchers")
+}
+
+enum TransactionStatus {
+  WAITING_FOR_PAYMENT
+  WAITING_FOR_ADMIN_CONFIRMATION
+  DONE
+  REJECTED
+  EXPIRED
+  CANCELED
+}
+
+model Transaction {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  status TransactionStatus @default(WAITING_FOR_PAYMENT)
+
+  subtotalIdr    Int // sum of ticket items before discounts
+  voucherId      String?
+  voucher        Voucher? @relation(fields: [voucherId], references: [id])
+  voucherDiscIdr Int      @default(0)
+  couponId       String?
+  coupon         Coupon?  @relation(fields: [couponId], references: [id])
+  couponDiscIdr  Int      @default(0)
+  pointsUsedIdr  Int      @default(0) // points applied 1 point = 1 IDR
+  totalIdr       Int // final amount payable
+
+  paymentProofUrl String?
+  paymentDueAt    DateTime // createdAt + 2 hours; expire if no proof by then
+  decisionDueAt   DateTime? // proof uploaded -> now + 3 days for organizer to accept/reject
+  decidedAt       DateTime?
+
+  createdAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @updatedAt
+
+  items TransactionItem[]
+  review Review?
+
+  @@index([status])
+  @@index([paymentDueAt])
+  @@index([decisionDueAt])
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id            String       @id @default(uuid())
+  transactionId String
+  transaction   Transaction  @relation(fields: [transactionId], references: [id])
+  ticketTypeId  String?
+  ticketType    TicketType?  @relation(fields: [ticketTypeId], references: [id])
+  quantity      Int
+  unitPriceIdr  Int
+
+  @@map("transaction_items")
+}
+
+model Review {
+  id            String      @id @default(uuid())
+  transactionId String      @unique
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  eventId       String
+  event         Event       @relation(fields: [eventId], references: [id])
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  rating        Int // 1-5
+  comment       String?
+  createdAt     DateTime    @default(now())
+
+  @@map("reviews")
+}
