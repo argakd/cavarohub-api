@@ -1,9 +1,12 @@
 import { Router } from "express";
 import multer from "multer";
 import path from "path";
-import * as transactionController from "../controllers/transaction.controller";
-import { requireAuth, requireRole } from "../middlewares/auth";
-import { asyncHandler } from "../utils/asyncHandler";
+import { fileURLToPath } from "node:url";
+import * as transactionController from "../controllers/transaction.controller.js";
+import { requireAuth, requireRole } from "../middlewares/auth.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const upload = multer({
   dest: path.join(__dirname, "../uploads"),

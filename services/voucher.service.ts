@@ -1,6 +1,6 @@
-import { prisma } from "../lib/prisma";
-import { AppError } from "../middlewares/errorHandler";
-import { getEventOr404 } from "./event.service";
+import { prisma } from "../lib/prisma.js";
+import { AppError } from "../middlewares/errorHandler.js";
+import { getEventOr404 } from "./event.service.js";
 
 type CreateVoucherInput = {
   eventId: string;

@@ -1,5 +1,5 @@
-import { prisma } from "../lib/prisma";
-import { groupTransactionsByPeriod } from "../utils/dashboard.stats";
+import { prisma } from "../lib/prisma.js";
+import { groupTransactionsByPeriod } from "../utils/dashboard.stats.js";
 
 export async function getOrganizerStats(organizerId: string) {
   const events = await prisma.event.findMany({ where: { organizerId }, select: { id: true } });

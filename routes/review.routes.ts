@@ -1,7 +1,7 @@
 import { Router } from "express";
-import * as reviewController from "../controllers/review.controller";
-import { requireAuth, requireRole } from "../middlewares/auth";
-import { asyncHandler } from "../utils/asyncHandler";
+import * as reviewController from "../controllers/review.controller.js";
+import { requireAuth, requireRole } from "../middlewares/auth.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const router = Router();
 

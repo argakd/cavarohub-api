@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import * as reviewService from "../services/review.service";
-import { createReviewSchema } from "../validators/review.validator";
-import { AppError } from "../middlewares/errorHandler";
+import * as reviewService from "../services/review.service.js";
+import { createReviewSchema } from "../validators/review.validator.js";
+import { AppError } from "../middlewares/errorHandler.js";
 
 export async function create(req: Request, res: Response) {
   const parsed = createReviewSchema.parse(req.body);

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as authService from "../services/auth.service";
+import * as authService from "../services/auth.service.js";
 import {
   changePasswordSchema,
   forgotPasswordSchema,
@@ -7,8 +7,8 @@ import {
   registerSchema,
   resetPasswordSchema,
   updateProfileSchema,
-} from "../validators/auth.validator";
-import { AppError } from "../middlewares/errorHandler";
+} from "../validators/auth.validator.js";
+import { AppError } from "../middlewares/errorHandler.js";
 
 export async function register(req: Request, res: Response) {
   const parsed = registerSchema.parse(req.body);

@@ -1,7 +1,7 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "../lib/prisma";
-import { AppError } from "../middlewares/errorHandler";
-import slugify from "../utils/slugify";
+import { Prisma } from "../generated/prisma/client.js";
+import { prisma } from "../lib/prisma.js";
+import { AppError } from "../middlewares/errorHandler.js";
+import slugify from "../utils/slugify.js";
 
 type CreateEventInput = {
   organizerId: string;

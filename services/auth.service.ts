@@ -1,12 +1,12 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { prisma } from "../lib/prisma";
-import { signToken } from "../lib/jwt";
-import { sendMail } from "../lib/mailer";
-import { AppError } from "../middlewares/errorHandler";
-import { generateReferralCode } from "../utils/referralCode";
-import { env } from "../config/env";
-import { computeReferralReward } from "../utils/referral";
+import { prisma } from "../lib/prisma.js";
+import { signToken } from "../lib/jwt.js";
+import { sendMail } from "../lib/mailer.js";
+import { AppError } from "../middlewares/errorHandler.js";
+import { generateReferralCode } from "../utils/referralCode.js";
+import { env } from "../config/env.js";
+import { computeReferralReward } from "../utils/referral.js";
 
 const SALT_ROUNDS = 10;
 const RESET_TOKEN_WINDOW_MS = 60 * 60 * 1000;

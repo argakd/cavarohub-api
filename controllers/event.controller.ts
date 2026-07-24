@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import * as eventService from "../services/event.service";
-import { createEventSchema, listEventsQuerySchema, updateEventSchema } from "../validators/event.validator";
-import { AppError } from "../middlewares/errorHandler";
+import * as eventService from "../services/event.service.js";
+import { createEventSchema, listEventsQuerySchema, updateEventSchema } from "../validators/event.validator.js";
+import { AppError } from "../middlewares/errorHandler.js";
 
 export async function create(req: Request, res: Response) {
   const parsed = createEventSchema.parse(req.body);

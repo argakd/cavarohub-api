@@ -1,5 +1,5 @@
 import nodemailer, { Transporter } from "nodemailer";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 type MailInput = { to: string; subject: string; text: string };
 

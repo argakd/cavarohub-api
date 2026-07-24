@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 export type JwtPayload = { id: string; role: "CUSTOMER" | "ORGANIZER" };
 

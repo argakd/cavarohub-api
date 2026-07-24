@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import * as transactionService from "../services/transaction.service";
-import { createTransactionSchema, decideTransactionSchema, uploadProofSchema } from "../validators/transaction.validator";
-import { AppError } from "../middlewares/errorHandler";
-import { prisma } from "../lib/prisma";
+import * as transactionService from "../services/transaction.service.js";
+import { createTransactionSchema, decideTransactionSchema, uploadProofSchema } from "../validators/transaction.validator.js";
+import { AppError } from "../middlewares/errorHandler.js";
+import { prisma } from "../lib/prisma.js";
 
 export async function create(req: Request, res: Response) {
   const parsed = createTransactionSchema.parse(req.body);

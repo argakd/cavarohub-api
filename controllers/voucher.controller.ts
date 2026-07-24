@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import * as voucherService from "../services/voucher.service";
-import { createVoucherSchema } from "../validators/event.validator";
-import { AppError } from "../middlewares/errorHandler";
+import * as voucherService from "../services/voucher.service.js";
+import { createVoucherSchema } from "../validators/event.validator.js";
+import { AppError } from "../middlewares/errorHandler.js";
 
 export async function create(req: Request, res: Response) {
   const parsed = createVoucherSchema.parse(req.body);

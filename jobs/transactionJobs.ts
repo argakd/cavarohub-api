@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { autoCancelUndecidedTransactions, expireOverdueTransactions } from "../services/transaction.service";
+import { autoCancelUndecidedTransactions, expireOverdueTransactions } from "../services/transaction.service.js";
 
 export function startTransactionJobs() {
   cron.schedule("* * * * *", async () => {

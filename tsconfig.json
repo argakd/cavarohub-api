@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2023",
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "lib": [
-      "ES2022"
+      "ES2023"
     ],
     "outDir": "dist",
     "rootDir": ".",
@@ -26,7 +26,9 @@
     "validators/**/*.ts",
     "utils/**/*.ts",
     "lib/**/*.ts",
-    "jobs/**/*.ts"
+    "jobs/**/*.ts",
+    "prisma/**/*.ts",
+    "generated/**/*.ts"
   ],
   "exclude": [
     "node_modules",

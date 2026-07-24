@@ -1,8 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { createApp } from "./app";
-import { env } from "./config/env";
-import { startTransactionJobs } from "./jobs/transactionJobs";
+import { fileURLToPath } from "node:url";
+import { createApp } from "./app.js";
+import { env } from "./config/env.js";
+import { startTransactionJobs } from "./jobs/transactionJobs.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const uploadsDir = path.join(__dirname, "./uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });

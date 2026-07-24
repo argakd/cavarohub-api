@@ -1,6 +1,6 @@
-import { prisma } from "../lib/prisma";
-import { AppError } from "../middlewares/errorHandler";
-import { isEligibleForReview } from "../utils/review.eligibility";
+import { prisma } from "../lib/prisma.js";
+import { AppError } from "../middlewares/errorHandler.js";
+import { isEligibleForReview } from "../utils/review.eligibility.js";
 
 export async function createReview(input: {
   userId: string;

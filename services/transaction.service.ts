@@ -1,15 +1,15 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { prisma } from "../lib/prisma";
-import { sendMail } from "../lib/mailer";
-import { AppError } from "../middlewares/errorHandler";
-import { calculatePricing } from "../utils/pricing";
+import { Prisma, PrismaClient } from "../generated/prisma/client.js";
+import { prisma } from "../lib/prisma.js";
+import { sendMail } from "../lib/mailer.js";
+import { AppError } from "../middlewares/errorHandler.js";
+import { calculatePricing } from "../utils/pricing.js";
 import {
   assertTransition,
   DECISION_WINDOW_MS,
   PAYMENT_WINDOW_MS,
   requiresRollback,
   TxStatus,
-} from "../utils/transaction.statemachine";
+} from "../utils/transaction.statemachine.js";
 
 type Tx = Prisma.TransactionClient | PrismaClient;
 

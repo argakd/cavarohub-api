@@ -1,9 +1,9 @@
 import { Router } from "express";
-import * as eventController from "../controllers/event.controller";
-import * as voucherController from "../controllers/voucher.controller";
-import * as reviewController from "../controllers/review.controller";
-import { requireAuth, requireRole } from "../middlewares/auth";
-import { asyncHandler } from "../utils/asyncHandler";
+import * as eventController from "../controllers/event.controller.js";
+import * as voucherController from "../controllers/voucher.controller.js";
+import * as reviewController from "../controllers/review.controller.js";
+import { requireAuth, requireRole } from "../middlewares/auth.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const router = Router();
 
