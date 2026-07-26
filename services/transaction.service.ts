@@ -190,6 +190,7 @@ export async function uploadPaymentProof(transactionId: string, userId: string, 
         status: "WAITING_FOR_ADMIN_CONFIRMATION",
         decisionDueAt: new Date(Date.now() + DECISION_WINDOW_MS),
       },
+      include: { items: { include: { ticketType: true } }, event: true, user: { select: { id: true, name: true, email: true } } },
     });
   });
 }
