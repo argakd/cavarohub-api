@@ -16,6 +16,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export function createApp() {
   const app = express();
 
+  // Railway sits in front of us as a reverse proxy — trust its X-Forwarded-* headers
+  // so req.protocol/req.get("host") reflect the real public https URL, not the internal one.
+  app.set("trust proxy", 1);
+
   app.use(cors({ origin: env.clientOrigin }));
   app.use(express.json());
   app.use(authenticate);

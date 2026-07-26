@@ -33,7 +33,9 @@ export async function uploadProof(req: Request, res: Response) {
   if (!req.user) throw new AppError(401, "Authentication required");
 
   const uploadedFile = (req as Request & { file?: Express.Multer.File }).file;
-  const paymentProofUrl = uploadedFile ? `/uploads/${uploadedFile.filename}` : uploadProofSchema.parse(req.body).paymentProofUrl;
+  const paymentProofUrl = uploadedFile
+    ? `${req.protocol}://${req.get("host")}/uploads/${uploadedFile.filename}`
+    : uploadProofSchema.parse(req.body).paymentProofUrl;
 
   const transaction = await transactionService.uploadPaymentProof(req.params.id as string, req.user.id, paymentProofUrl);
   res.json(transaction);
