@@ -9,9 +9,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// multer's plain `dest` option strips the original file extension, which left
-// downloaded proofs without one (they'd open blank until you renamed them by
-// hand). Use diskStorage instead so the saved filename keeps it.
 const storage = multer.diskStorage({
   destination: path.join(__dirname, "../uploads"),
   filename: (_req, file, cb) => {
