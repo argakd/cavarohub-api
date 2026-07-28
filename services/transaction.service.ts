@@ -288,7 +288,6 @@ export async function cancelTransaction(transactionId: string, userId: string) {
   });
 }
 
-/** Called by the cron job: expire unpaid transactions past their 2h window. */
 export async function expireOverdueTransactions() {
   const now = new Date();
   const overdue = await prisma.transaction.findMany({
@@ -308,7 +307,6 @@ export async function expireOverdueTransactions() {
   return overdue.length;
 }
 
-/** Called by the cron job: auto-cancel transactions the organizer never decided on within 3 days. */
 export async function autoCancelUndecidedTransactions() {
   const now = new Date();
   const overdue = await prisma.transaction.findMany({
