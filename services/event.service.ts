@@ -173,7 +173,7 @@ export async function deleteEvent(eventId: string, organizerId: string) {
 
   const transactionCount = await prisma.transaction.count({ where: { eventId } });
   if (transactionCount > 0) {
-    throw new AppError(400, "This event already has transactions and can't be deleted. Cancel or resolve them first.");
+    throw new AppError(400, "This event already has transactions and can't be deleted.");
   }
 
   await prisma.$transaction([
