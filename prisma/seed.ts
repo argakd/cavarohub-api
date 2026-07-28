@@ -12,9 +12,9 @@ async function main() {
     create: {
       email: "admin@mail.com",
       passwordHash,
-      name: "Nadia Organizer",
+      name: "Nadia",
       role: "ORGANIZER",
-      referralCode: "ORGNAD01",
+      referralCode: "NADORG01",
     },
   });
 
@@ -24,9 +24,9 @@ async function main() {
     create: {
       email: "joko@mail.com",
       passwordHash,
-      name: "Joko Customer",
+      name: "Joko",
       role: "CUSTOMER",
-      referralCode: "JOKOREF1",
+      referralCode: "JOKREF",
     },
   });
 
@@ -36,9 +36,9 @@ async function main() {
     create: {
       email: "siti@mail.com",
       passwordHash,
-      name: "Siti Referred",
+      name: "Siti",
       role: "CUSTOMER",
-      referralCode: "SITIREF1",
+      referralCode: "SITREF",
       referredById: customer.id,
     },
   });
