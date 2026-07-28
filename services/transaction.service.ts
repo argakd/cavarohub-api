@@ -195,7 +195,6 @@ export async function uploadPaymentProof(transactionId: string, userId: string, 
   });
 }
 
-/** Restores seats, points and voucher usage for a transaction being rolled back. */
 async function rollbackTransaction(tx: Tx, transactionId: string) {
   const transaction = await tx.transaction.findUnique({ where: { id: transactionId }, include: { items: true } });
   if (!transaction) return;
