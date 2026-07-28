@@ -81,11 +81,6 @@ async function main() {
     update: {},
     create: { name: "Technology" },
   });
-
-  console.log("Seed complete. Demo accounts (all use the same password):");
-  console.log(`  admin@mail.com / ${DEMO_PASSWORD}  (id: ${organizer.id})`);
-  console.log(`  joko@mail.com  / ${DEMO_PASSWORD}  (id: ${customer.id}) — referral code JOKOREF1`);
-  console.log(`  siti@mail.com  / ${DEMO_PASSWORD}  (id: ${referredCustomer.id}) — registered using JOKOREF1`);
 }
 
 main()
